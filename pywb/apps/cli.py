@@ -51,6 +51,8 @@ class BaseCli(object):
 
         parser.add_argument('-p', '--port', type=int, default=default_port,
                             help='Port to listen on (default %s)' % default_port)
+        parser.add_argument('-wp', '--warc-server-port', type=int, default=0,
+                            help='Port for internal warc server to listen on (default %s)' % 0)
         parser.add_argument('-b', '--bind', default='0.0.0.0',
                             help='Address to listen on (default 0.0.0.0)')
         parser.add_argument('-t', '--threads', type=int, default=4,
@@ -187,7 +189,8 @@ class WaybackCli(ReplayCli):
         from pywb.apps.frontendapp import FrontEndApp
 
         super(WaybackCli, self).load()
-        return FrontEndApp(custom_config=self.extra_config)
+        return FrontEndApp(custom_config=self.extra_config,
+                           warc_server_port=self.r.warc_server_port)
 
 
 #=============================================================================
@@ -200,7 +203,8 @@ class LiveCli(BaseCli):
         self.r.live = True
 
         super(LiveCli, self).load()
-        return FrontEndApp(config_file=None, custom_config=self.extra_config)
+        return FrontEndApp(config_file=None, custom_config=self.extra_config,
+                           warc_server_port=self.r.warc_server_port)
 
 
 #=============================================================================

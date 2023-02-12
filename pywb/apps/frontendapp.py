@@ -63,7 +63,7 @@ class FrontEndApp(object):
 
     ALL_DIGITS = re.compile(r'^\d+$')
 
-    def __init__(self, config_file=None, custom_config=None):
+    def __init__(self, config_file=None, custom_config=None, warc_server_port=0):
         """
         :param str|None config_file: Path to the config file
         :param dict|None custom_config: Dictionary containing additional configuration information
@@ -81,7 +81,9 @@ class FrontEndApp(object):
 
         self.debug = config.get('debug', False)
 
-        self.warcserver_server = GeventServer(self.warcserver, port=0)
+        self.warcserver_server = GeventServer(self.warcserver, port=warc_server_port)
+        msg = 'Started WarcServer on {0}'
+        logging.info(msg.format(self.warcserver_server.port))
 
         self.proxy_prefix = None  # the URL prefix to be used for the collection with proxy mode (e.g. /coll/id_/)
         self.proxy_coll = None  # the name of the collection that has proxy mode enabled
