@@ -11,27 +11,35 @@ debug: true
   # navbar_color_hex: fff
   # navbar_light_buttons: true
 
+index_paths: cdx+http://web.archive.org/cdx
+
 collections:
-    all: $all
     pywb:
         index_paths: ./sample_archive/cdx/
         archive_paths: ./sample_archive/warcs/
 
-# Settings for each collection
-use_js_obj_proxy: true
+# Enable auto collections
+enable_auto_colls: true
 
-# Eanable Memento support
+# Enable Memento support
 enable_memento: true
+
+# Enable remote auto collections
+enable_remote_auto_colls: true
 
 # Replay content in an iframe
 framed_replay: true
 
+# Enable redirect to exact
 redirect_to_exact: true
 
+# Settings for each collection
+use_js_obj_proxy: true
+
 # Uncomment and change to set default locale
-# default_locale: en
+#default_locale: en
 
 # Uncomment to set available locales
-# locales:
-#   - en
-#   - ru
+#locales:
+#  - en
+#  - ru

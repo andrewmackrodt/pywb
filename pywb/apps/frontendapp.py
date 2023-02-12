@@ -115,6 +115,8 @@ class FrontEndApp(object):
         metadata_templ = os.path.join(self.warcserver.root_dir, '{coll}', 'metadata.yaml')
         self.metadata_cache = MetadataCache(metadata_templ)
 
+        self.enable_remote_auto_colls = config.get('enable_remote_auto_colls', False)
+
         self._init_routes()
 
     def _init_routes(self):
@@ -380,7 +382,7 @@ class FrontEndApp(object):
         :return: The WbResponse containing the collections search page
         :rtype: WbResponse
         """
-        if not self.is_valid_coll(coll):
+        if not self.enable_remote_auto_colls and not self.is_valid_coll(coll):
             self.raise_not_found(environ, 'coll_not_found', coll)
 
         self.setup_paths(environ, coll)
@@ -475,7 +477,7 @@ class FrontEndApp(object):
         :return: WbResponse containing the contents of the record/URL
         :rtype: WbResponse
         """
-        if not self.is_valid_coll(coll):
+        if not self.enable_remote_auto_colls and not self.is_valid_coll(coll):
             self.raise_not_found(environ, 'coll_not_found', coll)
 
         self.setup_paths(environ, coll, record)

@@ -138,9 +138,22 @@ class WarcServer(BaseWarcServer):
             print('No Root Dir, Skip Auto Colls!')
             return
 
-        dir_source = CacheDirectoryIndexSource(base_prefix=self.root_dir,
-                                               base_dir=self.index_paths,
-                                               config=self.config)
+        enable_remote_auto_colls = self.config.get('enable_remote_auto_colls')
+
+        if enable_remote_auto_colls and self.index_paths.startswith('cdx+'):
+            api_url=self.index_paths[4:] + '?url={url}&closest={closest}&sort=closest'
+            name = 'cdx'
+            needs_agg = True
+
+            base_source = RemoteIndexSource(api_url=api_url,
+                                            replay_url='http://web.archive.org/web/{timestamp}id_/{url}')
+        else:
+            name = 'dir'
+            needs_agg = False
+
+            base_source = CacheDirectoryIndexSource(base_prefix=self.root_dir,
+                                                    base_dir=self.index_paths,
+                                                    config=self.config)
 
         access_checker = AccessChecker(CacheDirectoryAccessSource(base_prefix=self.root_dir,
                                                                   base_dir=self.acl_paths,
@@ -149,10 +162,12 @@ class WarcServer(BaseWarcServer):
 
         if self.dedup_index_url:
             source = SimpleAggregator({'dedup': RedisMultiKeyIndexSource(self.dedup_index_url),
-                                       'dir': dir_source})
+                                       name: base_source})
 
+        elif needs_agg:
+            source = SimpleAggregator({name: base_source})
         else:
-            source = dir_source
+            source = base_source
 
         return DefaultResourceHandler(source, self.archive_paths,
                                       rules_file=self.rules_file,
